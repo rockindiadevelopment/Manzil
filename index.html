@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manzil - Your Islamic Journey</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Certificate Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Certificate & App Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <!-- Library for Image Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -31,6 +31,11 @@
             overflow-x: hidden;
         }
 
+        .urdu-font {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            line-height: 2.2;
+        }
+
         .glass {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -47,26 +52,13 @@
             transition: all 0.3s ease;
         }
 
-        .certificate-unlocked {
-            animation: glow 2s infinite alternate;
-        }
-
-        @keyframes glow {
-            from { box-shadow: 0 0 10px #10b981; }
-            to { box-shadow: 0 0 30px #10b981; }
-        }
-
-        .locked-overlay {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
-        }
-
         /* Certificate Styles */
         .cert-outer-wrapper {
             overflow-x: auto;
             display: flex;
             justify-content: center;
             padding: 20px 0;
+            width: 100%;
         }
 
         .cert-container {
@@ -98,32 +90,6 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15h15V30l-15 15v15H30L15 45H0V30l15-15V0h15zm0 10L10 30l20 20 20-20-20-20z' fill='%23c7a969' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        .arch-shape {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 100%;
-            border: 3px solid var(--cert-gold);
-            border-bottom: none;
-            border-radius: 400px 400px 0 0;
-            pointer-events: none;
-        }
-        
-        .arch-shape-inner {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70%;
-            height: 100%;
-            border: 2px solid var(--cert-gold-light);
-            border-bottom: none;
-            border-radius: 350px 350px 0 0;
-            pointer-events: none;
-        }
-
         .corner-decor {
             position: absolute;
             width: 80px;
@@ -150,16 +116,10 @@
             padding: 0 20px;
             margin: 20px 0;
             outline: none;
+            color: var(--cert-blue);
         }
-        .recipient-name:focus { background-color: rgba(199, 169, 105, 0.1); }
 
         .signature-line { border-top: 1px solid var(--cert-blue); width: 240px; margin: 5px auto; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         .typing-dots:after {
             content: '.';
@@ -170,9 +130,45 @@
             33% { content: '..'; }
             66% { content: '...'; }
         }
+
+        #custom-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translate(-50%, -20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .sparkle-btn {
+            background: linear-gradient(45deg, #059669, #10b981);
+            position: relative;
+            overflow: hidden;
+        }
+        .sparkle-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease-out;
+        }
+        .sparkle-btn:hover::after {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="min-h-screen pb-20">
+
+    <div id="custom-alert" class="glass text-white font-bold"></div>
 
     <audio id="main-audio-element" class="hidden" preload="auto"></audio>
 
@@ -186,7 +182,6 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <div id="hijri-display" class="text-sm font-medium text-emerald-400 bg-emerald-900/30 px-3 py-1 rounded-full border border-emerald-500/20">Hijri Tareekh...</div>
                 <div class="flex flex-col items-end">
                     <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Kul Progress</span>
                     <div class="w-24 bg-slate-800 h-1.5 rounded-full mt-1">
@@ -201,8 +196,7 @@
         <nav class="flex space-x-8 mb-8 border-b border-slate-700 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button onclick="switchTab('quran')" id="tab-quran" class="pb-3 px-1 active-tab font-semibold transition-all">Quran Paras</button>
             <button onclick="switchTab('ai')" id="tab-ai" class="pb-3 px-1 text-slate-400 font-semibold transition-all">AI Guide</button>
-            <button onclick="switchTab('calendar')" id="tab-calendar" class="pb-3 px-1 text-slate-400 font-semibold transition-all">Calendar</button>
-            <button onclick="switchTab('quiz')" id="tab-quiz" class="pb-3 px-1 text-slate-400 font-semibold transition-all">Quiz</button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="pb-3 px-1 text-slate-400 font-semibold transition-all">Quiz ✨</button>
         </nav>
 
         <section id="content-quran" class="tab-content">
@@ -214,6 +208,19 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10" id="para-list"></div>
+
+            <!-- Insights Section -->
+            <div id="para-insights-container" class="hidden mb-10 animate-fade-in">
+                <div class="glass p-6 rounded-3xl border border-emerald-500/30">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-yellow-400"></i> ✨ AI Para Insights
+                        </h3>
+                        <button onclick="closeInsights()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div id="insights-content" class="text-slate-300 text-sm leading-relaxed urdu-font whitespace-pre-wrap"></div>
+                </div>
+            </div>
 
             <div class="mt-12 mb-10">
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
@@ -235,23 +242,26 @@
                     </div>
                 </div>
 
-                <div id="unlocked-certificate-ui" class="hidden glass rounded-3xl p-8 text-center border-2 border-emerald-500/50 certificate-unlocked">
+                <div id="unlocked-certificate-ui" class="hidden glass rounded-3xl p-8 text-center border-2 border-emerald-500/50">
                     <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-lg">🏆</div>
                     <h3 class="text-2xl font-bold text-emerald-400 mb-2">Mubarak Ho! Aapne Khatm Kar Liya</h3>
                     <p class="text-slate-300 mb-6">Aapka official certificate ab taiyar hai. Neeche button par click karein.</p>
-                    <button onclick="showCertificate()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl flex items-center gap-2 mx-auto">
+                    <button onclick="showCertificate()" class="sparkle-btn text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl flex items-center gap-2 mx-auto">
                         <i class="fas fa-pen-nib"></i> Certificate Par Naam Likhein
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- (Other sections AI, Calendar, Quiz remain as they were) -->
         <section id="content-ai" class="tab-content hidden">
             <div class="glass rounded-3xl p-6 min-h-[500px] flex flex-col">
-                <div class="mb-4"><h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-robot text-emerald-400"></i> AI Islamic Guide. /- AI se hasil kardah maloomat mein ghalti ho sakti hai. Aham masail ke liye hamesha Mustanad Ulama-e-Kiram se ruju karein.</h2></div>
-                <div id="chat-window" class="flex-1 overflow-y-auto space-y-4 mb-4 p-2 text-sm">
-                    <div class="bg-slate-800/50 p-4 rounded-2xl rounded-tl-none max-w-[85%]">Assalamu Alaikum! Main aapka AI assistant hoon. Aaj main aapki kya madad kar sakta hoon?</div>
+                <div class="mb-4 flex flex-wrap gap-2">
+                    <button onclick="aiPrompt('Mujhe ek dilchasp Islamic waqia sunayein.')" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs border border-white/5 transition-all">✨ Islamic Story</button>
+                    <button onclick="aiPrompt('Mujhe gham aur pareshani ke liye ek masnoon dua batayein.')" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs border border-white/5 transition-all">✨ Dua Generator</button>
+                    <button onclick="aiPrompt('Aaj ka ek Sunnah tareeqa batayein.')" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs border border-white/5 transition-all">✨ Today's Sunnah</button>
+                </div>
+                <div id="chat-window" class="flex-1 overflow-y-auto space-y-4 mb-4 p-2 text-sm max-h-[400px]">
+                    <div class="bg-slate-800/50 p-4 rounded-2xl rounded-tl-none max-w-[85%]">Assalamu Alaikum! Main aapka AI assistant hoon. Main Quranic insights, Masnoon Duas aur Islamic tareekh mein aapki madad kar sakta hoon. Aaj main aapki kya madad kar sakta hoon?</div>
                 </div>
                 <div class="relative">
                     <input type="text" id="ai-input" placeholder="Apna sawal likhein..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-4 px-6 pr-12 focus:outline-none focus:border-emerald-500">
@@ -260,36 +270,46 @@
             </div>
         </section>
 
-        <section id="content-calendar" class="tab-content hidden">
-            <div class="glass rounded-3xl p-8 text-center relative overflow-hidden">
-                <i class="fas fa-moon absolute -right-4 -top-4 text-9xl text-white/5 rotate-12"></i>
-                <h2 class="text-2xl font-bold mb-6">Islamic Calendar</h2>
-                <div id="full-calendar-display" class="space-y-4 relative z-10">
-                    <div class="text-8xl font-black text-emerald-500" id="hijri-day-big">--</div>
-                    <div class="text-3xl font-bold" id="hijri-month-year-big">Loading...</div>
-                    <div class="text-slate-400 mt-4" id="gregorian-reference">--</div>
-                </div>
-            </div>
-        </section>
-
         <section id="content-quiz" class="tab-content hidden">
-            <div class="glass rounded-3xl p-12 text-center border-dashed border-2 border-emerald-500/30">
-                <i class="fas fa-trophy text-4xl text-emerald-500 mb-6"></i>
-                <h2 class="text-3xl font-bold mb-2">Islamic Quiz Quest</h2>
-                <p class="text-emerald-400 font-bold mb-6 tracking-widest uppercase text-sm animate-pulse">Coming Soon!!!</p>
+            <div id="quiz-intro" class="glass rounded-3xl p-12 text-center border-dashed border-2 border-emerald-500/30">
+                <i class="fas fa-brain text-4xl text-emerald-500 mb-6"></i>
+                <h2 class="text-3xl font-bold mb-2">Islamic Knowledge Quest</h2>
+                <p class="text-slate-400 mb-8">Apne ilm ko check karein. AI aapke liye Quran aur Sunnah se mutaliq naye sawalat banayega.</p>
+                <button onclick="generateQuiz()" class="sparkle-btn text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl inline-flex items-center gap-2">
+                    <i class="fas fa-magic"></i> ✨ Start AI Quiz
+                </button>
+            </div>
+            <div id="quiz-area" class="hidden glass rounded-3xl p-8 min-h-[400px]">
+                <div id="quiz-loading" class="flex flex-col items-center justify-center py-20 text-emerald-500">
+                    <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                    <p class="font-bold">✨ AI Sawalat Taiyar Kar Raha Hai...</p>
+                </div>
+                <div id="quiz-content" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <span id="quiz-progress" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Question 1 of 3</span>
+                        <div class="h-1 flex-1 mx-4 bg-slate-800 rounded-full"><div id="quiz-bar" class="h-full bg-emerald-500 transition-all duration-500 w-[33%]"></div></div>
+                    </div>
+                    <div id="question-text" class="text-xl font-bold mb-8 urdu-font leading-relaxed"></div>
+                    <div id="options-container" class="grid grid-cols-1 gap-3"></div>
+                </div>
+                <div id="quiz-result" class="hidden text-center py-10">
+                    <h3 class="text-4xl font-black mb-4" id="score-text">3/3</h3>
+                    <p class="text-slate-400 mb-8" id="feedback-text">MashaAllah! Aapka ilm kamaal ka hai.</p>
+                    <button onclick="switchTab('quiz')" class="bg-slate-800 px-6 py-3 rounded-xl">Dobara Kheleid</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- CUSTOM CERTIFICATE MODAL -->
+    <!-- CERTIFICATE MODAL -->
     <div id="cert-modal" class="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4 hidden overflow-y-auto">
         <div class="w-full max-w-5xl mb-6 flex justify-between items-center">
             <div class="text-white">
                 <h2 class="text-xl font-bold">Customize Your Certificate</h2>
-                <p class="text-xs text-slate-400">Click on "YOUR NAME HERE" below to edit before saving.</p>
+                <p class="text-xs text-slate-400">Edit "YOUR NAME HERE" before saving.</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="downloadCertificate()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                <button onclick="downloadCertificate()" id="download-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg">
                     <i class="fas fa-image"></i> Download as Image
                 </button>
                 <button onclick="hideCertificate()" class="bg-slate-800 text-white w-12 h-12 rounded-xl flex items-center justify-center">
@@ -298,38 +318,29 @@
             </div>
         </div>
 
-        <div class="cert-outer-wrapper w-full">
-            <!-- THE CERTIFICATE DESIGN -->
+        <div class="cert-outer-wrapper">
             <div id="certificate-capture" class="cert-container">
                 <div class="arch-background"></div>
                 <div class="gold-frame"></div>
                 <div class="arch-shape"></div>
                 <div class="arch-shape-inner"></div>
-
                 <div class="corner-decor top-left"></div>
                 <div class="corner-decor top-right"></div>
                 <div class="corner-decor bottom-left"></div>
                 <div class="corner-decor bottom-right"></div>
-
                 <div class="relative z-10 flex flex-col items-center h-full text-center px-20 py-16">
                     <div class="bismillah mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
                     <div class="mb-8">
                         <h2 class="cert-title text-3xl font-bold mb-2">CERTIFICATE</h2>
                         <h3 class="cert-title text-xl tracking-widest">OF COMPLETION</h3>
                     </div>
-
                     <p class="text-sm uppercase tracking-widest font-semibold mb-4">This certificate is proudly presented to</p>
-                    
-                    <div id="cert-recipient-name" class="recipient-name" contenteditable="true" spellcheck="false">
-                        YOUR NAME HERE
-                    </div>
-
+                    <div id="cert-recipient-name" class="recipient-name" contenteditable="true" spellcheck="false">YOUR NAME HERE</div>
                     <div class="max-w-3xl mx-auto mt-4">
                         <p class="text-lg leading-relaxed italic">
                             In recognition of your outstanding dedication and successful completion of listening to all 30 Paras of the Holy Quran. May this journey be a source of constant guidance, peace, and blessing in your life.
                         </p>
                     </div>
-
                     <div class="mt-auto w-full flex justify-around items-end px-10 pb-8">
                         <div class="text-center">
                             <div class="signature-font mb-[-10px]">Manzil App</div>
@@ -366,7 +377,7 @@
     </div>
 
     <script>
-        const AI_API_KEY = "AIzaSyDdeJRNMXW-O5MBLBi26qDrvNZ8b-fycW4"; 
+        const apiKey = ""; 
 
         const paras = [
             { id: 1, title: "Alif Lam Meem", audio: "Para 01.mp3" },
@@ -403,29 +414,170 @@
 
         let paraProgress = JSON.parse(localStorage.getItem('manzil_audio_v1_progress')) || {};
         const audioElement = document.getElementById('main-audio-element');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const progressBar = document.getElementById('audio-progress-bar');
-        const timerText = document.getElementById('audio-timer');
+        let currentQuizData = null;
+        let quizStep = 0;
+        let score = 0;
 
-        function updateMediaSession(para) {
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: `Para ${para.id}: ${para.title}`,
-                    artist: 'Manzil App',
-                    artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/2913/2913501.png', sizes: '512x512', type: 'image/png' }]
-                });
-                navigator.mediaSession.setActionHandler('play', () => audioElement.play());
-                navigator.mediaSession.setActionHandler('pause', () => audioElement.pause());
+        // Gemini Fetch Function with Exponential Backoff
+        async function fetchGemini(query, systemPrompt = "You are a helpful Islamic assistant.", useJson = false) {
+            const payload = {
+                contents: [{ parts: [{ text: query }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: useJson ? { responseMimeType: "application/json" } : {}
+            };
+            
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error();
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text;
+                } catch (err) {
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(r => setTimeout(r, delay));
+                }
+            }
+            throw new Error('All retries failed');
+        }
+
+        // ✨ FEATURE: Para Insights
+        async function getParaInsights(paraId) {
+            const para = paras.find(p => p.id == paraId);
+            const container = document.getElementById('para-insights-container');
+            const content = document.getElementById('insights-content');
+            
+            container.classList.remove('hidden');
+            content.innerHTML = '<span class="typing-dots italic">✨ AI generating insights for Para ' + paraId + '</span>';
+            
+            try {
+                const prompt = `Summarize Para ${paraId} (${para.title}) of the Quran. Include 3 key lessons or major events mentioned in this Para. Use Urdu (Roman and Script mixed) with clear headings.`;
+                const text = await fetchGemini(prompt, "You are a Quranic scholar assisting a student.");
+                content.innerText = text;
+            } catch (e) {
+                content.innerText = "Error loading insights. Please try again.";
             }
         }
 
+        function closeInsights() {
+            document.getElementById('para-insights-container').classList.add('hidden');
+        }
+
+        // ✨ FEATURE: AI Quiz
+        async function generateQuiz() {
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-area').classList.remove('hidden');
+            document.getElementById('quiz-loading').classList.remove('hidden');
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+
+            const quizPrompt = `Generate 3 multiple choice questions about Quranic history or basic Fiqh in Urdu. Return JSON format with an array of objects: { question: string, options: string[], correct: number }. Correct index is 0-3.`;
+            
+            try {
+                const jsonStr = await fetchGemini(quizPrompt, "You are an Islamic Quiz Generator. Return ONLY valid JSON.", true);
+                currentQuizData = JSON.parse(jsonStr).questions || JSON.parse(jsonStr);
+                quizStep = 0;
+                score = 0;
+                showNextQuestion();
+            } catch (e) {
+                document.getElementById('quiz-intro').classList.remove('hidden');
+                document.getElementById('quiz-area').classList.add('hidden');
+                showMessage("Quiz load nahi ho saka. Dobara koshish karein.");
+            }
+        }
+
+        function showNextQuestion() {
+            if (quizStep >= currentQuizData.length) {
+                showQuizResult();
+                return;
+            }
+            const q = currentQuizData[quizStep];
+            document.getElementById('quiz-loading').classList.add('hidden');
+            document.getElementById('quiz-content').classList.remove('hidden');
+            document.getElementById('question-text').innerText = q.question;
+            document.getElementById('quiz-progress').innerText = `Question ${quizStep + 1} of ${currentQuizData.length}`;
+            document.getElementById('quiz-bar').style.width = ((quizStep + 1) / currentQuizData.length * 100) + '%';
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 bg-slate-800 hover:bg-slate-700 border border-white/5 rounded-xl transition-all urdu-font";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx);
+                optContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            if (idx === currentQuizData[quizStep].correct) score++;
+            quizStep++;
+            showNextQuestion();
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('score-text').innerText = `${score} / ${currentQuizData.length}`;
+            document.getElementById('feedback-text').innerText = score === currentQuizData.length ? "SubhanAllah! Zabardast Ilm." : "Koshish jaari rakhein, ilm hi kamyabi hai.";
+        }
+
+        // AI Guide quick prompts
+        async function aiPrompt(query) {
+            document.getElementById('ai-input').value = query;
+            handleAISubmit();
+        }
+
+        // Logic modifications for Para Cards to include Insight button
+        function renderParas() {
+            const container = document.getElementById('para-list');
+            container.innerHTML = '';
+            paras.forEach(para => {
+                const isComplete = paraProgress[para.id] === 100;
+                const card = document.createElement('div');
+                card.className = `para-card glass p-5 rounded-2xl flex items-center gap-4 cursor-pointer border ${isComplete ? 'border-emerald-500/40' : 'border-white/5'}`;
+                card.onclick = (e) => {
+                    if(e.target.closest('.insight-btn')) return;
+                    playPara(para);
+                };
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isComplete ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500'}">
+                        ${isComplete ? '<i class="fas fa-check"></i>' : para.id}
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-sm">Para ${para.id}</div>
+                        <div class="text-[10px] text-slate-400 font-medium">${para.title}</div>
+                        <div class="w-full bg-slate-800 h-1 mt-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full" style="width: ${isComplete ? '100%' : '0%'}"></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="getParaInsights(${para.id})" class="insight-btn text-xs bg-slate-800 hover:bg-slate-700 p-2 rounded-lg text-emerald-400 border border-emerald-500/20" title="Get AI Insights">
+                            ✨
+                        </button>
+                        <i class="fas ${isComplete ? 'fa-redo' : 'fa-play-circle'} text-emerald-500/50 text-xl self-center"></i>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showMessage(msg) {
+            const alertBox = document.getElementById('custom-alert');
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+        }
+
         function playPara(para) {
-            if (!para.audio) { alert("Audio link add karein."); return; }
+            if (!para.audio) { showMessage("Audio link add karein."); return; }
             document.getElementById('player-juz-num').innerText = para.id;
             document.getElementById('player-title').innerText = `Para ${para.id}: ${para.title}`;
             audioElement.src = para.audio;
-            audioElement.play().catch(() => {});
-            updateMediaSession(para);
+            audioElement.play().catch(() => { showMessage("Audio load karne mein masla hua."); });
             document.getElementById('global-player').classList.remove('translate-y-full');
             updatePlayPauseUI();
         }
@@ -438,21 +590,15 @@
 
         function updatePlayPauseUI() {
             const isPlaying = !audioElement.paused;
-            playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
-            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+            document.getElementById('play-pause-btn').innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
         }
 
         audioElement.ontimeupdate = () => {
             if (audioElement.duration) {
                 const percent = (audioElement.currentTime / audioElement.duration) * 100;
-                progressBar.style.width = percent + '%';
-                timerText.innerText = formatTime(audioElement.currentTime) + " / " + formatTime(audioElement.duration);
+                document.getElementById('audio-progress-bar').style.width = percent + '%';
+                document.getElementById('audio-timer').innerText = formatTime(audioElement.currentTime) + " / " + formatTime(audioElement.duration);
             }
-        };
-
-        audioElement.onended = () => {
-            markComplete(document.getElementById('player-juz-num').innerText);
-            updatePlayPauseUI();
         };
 
         function formatTime(secs) {
@@ -468,20 +614,9 @@
             updateOverallProgress();
         }
 
-        function closePlayer() {
-            audioElement.pause();
-            document.getElementById('global-player').classList.add('translate-y-full');
-        }
-
-        document.getElementById('progress-container').onclick = (e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            audioElement.currentTime = ((e.clientX - rect.left) / rect.width) * audioElement.duration;
-        };
-
-        window.onload = () => {
-            renderParas();
-            startClocks();
-            updateOverallProgress();
+        audioElement.onended = () => {
+            markComplete(document.getElementById('player-juz-num').innerText);
+            updatePlayPauseUI();
         };
 
         function switchTab(tab) {
@@ -489,31 +624,10 @@
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab', 'text-slate-400'));
             document.getElementById(`content-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).classList.add('active-tab');
-        }
-
-        function renderParas() {
-            const container = document.getElementById('para-list');
-            container.innerHTML = '';
-            paras.forEach(para => {
-                const isComplete = paraProgress[para.id] === 100;
-                const card = document.createElement('div');
-                card.className = `para-card glass p-5 rounded-2xl flex items-center gap-4 cursor-pointer border ${isComplete ? 'border-emerald-500/40' : 'border-white/5'}`;
-                card.onclick = () => playPara(para);
-                card.innerHTML = `
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isComplete ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-500'}">
-                        ${isComplete ? '<i class="fas fa-check"></i>' : para.id}
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-bold text-sm">Para ${para.id}</div>
-                        <div class="text-[10px] text-slate-400 font-medium">${para.title}</div>
-                        <div class="w-full bg-slate-800 h-1 mt-2 rounded-full overflow-hidden">
-                            <div class="bg-emerald-500 h-full" style="width: ${isComplete ? '100%' : '0%'}"></div>
-                        </div>
-                    </div>
-                    <i class="fas fa-play-circle text-emerald-500/50 text-xl"></i>
-                `;
-                container.appendChild(card);
-            });
+            if(tab === 'quiz') {
+                document.getElementById('quiz-intro').classList.remove('hidden');
+                document.getElementById('quiz-area').classList.add('hidden');
+            }
         }
 
         function updateOverallProgress() {
@@ -521,7 +635,6 @@
             const percentage = Math.round((count / 30) * 100);
             document.getElementById('overall-progress-text').innerText = percentage;
             document.getElementById('overall-progress-bar').style.width = percentage + '%';
-            
             if (percentage === 100) {
                 document.getElementById('locked-certificate-ui').classList.add('hidden');
                 document.getElementById('unlocked-certificate-ui').classList.remove('hidden');
@@ -532,83 +645,79 @@
             setInterval(() => {
                 document.getElementById('real-time-clock').innerText = new Date().toDateString() + " | " + new Date().toLocaleTimeString();
             }, 1000);
-            const hijri = new Intl.DateTimeFormat('en-u-ca-islamic-civil', { calendar: 'islamic-civil', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
-            document.getElementById('hijri-display').innerText = hijri;
-            const parts = hijri.split(' ');
-            document.getElementById('hijri-day-big').innerText = parts[0];
-            document.getElementById('hijri-month-year-big').innerText = parts.slice(1).join(' ');
-            document.getElementById('gregorian-reference').innerText = new Date().toDateString();
         }
 
-        // CERTIFICATE ACTIONS
-        function showCertificate() { document.getElementById('cert-modal').classList.remove('hidden'); }
-        function hideCertificate() { document.getElementById('cert-modal').classList.add('hidden'); }
-        
-        async function downloadCertificate() {
-            const certElement = document.getElementById('certificate-capture');
-            const btn = event.currentTarget;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            btn.disabled = true;
-
-            try {
-                const canvas = await html2canvas(certElement, {
-                    scale: 2, // High quality
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#fcfcf7'
-                });
-                const link = document.createElement('a');
-                link.download = 'Manzil_Completion_Certificate.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (e) {
-                alert("Error generating image. Try printing or taking a screenshot.");
-            } finally {
-                btn.innerHTML = '<i class="fas fa-image"></i> Download as Image';
-                btn.disabled = false;
-            }
-        }
-
-        // AI CHATBOT logic
         async function handleAISubmit() {
             const inp = document.getElementById('ai-input');
             const win = document.getElementById('chat-window');
-            if (!inp.value.trim()) return;
-            const query = inp.value;
+            const query = inp.value.trim();
+            if (!query) return;
             addMessage(query, 'user');
             inp.value = '';
-            
             const loading = document.createElement('div');
             loading.className = 'bg-slate-800/50 p-4 rounded-2xl max-w-[85%] italic text-xs';
-            loading.innerHTML = 'Manzil AI is thinking<span class="typing-dots"></span>';
+            loading.innerHTML = 'Manzil AI soch raha hai<span class="typing-dots"></span>';
             win.appendChild(loading);
             win.scrollTop = win.scrollHeight;
-
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${AI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: query }] }] })
-                });
-                const result = await response.json();
+                const text = await fetchGemini(query, "You are 'Manzil AI', a helpful Islamic guide. Use Urdu and English mixed (Roman Urdu). Always warn to consult scholars for complex matters.");
                 loading.remove();
-                addMessage(result.candidates[0].content.parts[0].text, 'bot');
+                addMessage(text || "Maaf kijiyega, main samajh nahi saka.", 'bot');
             } catch (e) {
                 loading.remove();
-                addMessage("Connection error. Try again later.", 'bot');
+                addMessage("Connection error. Dobara koshish karein.", 'bot');
             }
         }
 
         function addMessage(text, role) {
             const win = document.getElementById('chat-window');
             const msg = document.createElement('div');
-            msg.className = role === 'user' ? 'bg-emerald-600 p-4 rounded-2xl ml-auto text-white shadow-lg' : 'bg-slate-800 p-4 rounded-2xl border border-white/5';
+            msg.className = role === 'user' ? 'bg-emerald-600 p-4 rounded-2xl ml-auto text-white shadow-lg max-w-[85%]' : 'bg-slate-800 p-4 rounded-2xl border border-white/5 max-w-[85%]';
             msg.innerText = text;
             win.appendChild(msg);
             win.scrollTop = win.scrollHeight;
         }
 
-        document.getElementById('ai-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleAISubmit(); });
+        window.onload = () => {
+            renderParas();
+            startClocks();
+            updateOverallProgress();
+            
+            // Fix for the null property error: Ensure listeners are added safely
+            const progContainer = document.getElementById('progress-container');
+            if (progContainer) {
+                progContainer.onclick = (e) => {
+                    const rect = progContainer.getBoundingClientRect();
+                    audioElement.currentTime = ((e.clientX - rect.left) / rect.width) * audioElement.duration;
+                };
+            }
+            
+            const aiInp = document.getElementById('ai-input');
+            if (aiInp) {
+                aiInp.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleAISubmit(); });
+            }
+        };
+
+        function closePlayer() {
+            audioElement.pause();
+            document.getElementById('global-player').classList.add('translate-y-full');
+        }
+
+        function showCertificate() { document.getElementById('cert-modal').classList.remove('hidden'); }
+        function hideCertificate() { document.getElementById('cert-modal').classList.add('hidden'); }
+        async function downloadCertificate() {
+            const certElement = document.getElementById('certificate-capture');
+            const btn = document.getElementById('download-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            try {
+                const canvas = await html2canvas(certElement, { scale: 3, useCORS: true, backgroundColor: '#fcfcf7' });
+                const link = document.createElement('a');
+                link.download = `Manzil_Certificate.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            } catch (e) { showMessage("Download fail hua."); }
+            finally { btn.innerHTML = '<i class="fas fa-image"></i> Download as Image'; }
+        }
     </script>
 </body>
 </html>
